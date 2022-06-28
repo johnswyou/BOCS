@@ -74,7 +74,7 @@ class LinReg:
 			try:
 				alphaGibbs,a0,_,_,_ = bhs(self.xTrain,self.yTrain,nGibbs,0,1)
 			except:
-				print('error during Gibbs sampling. Trying again.')
+				# print('error during Gibbs sampling. Trying again.')
 				continue
 
 			# run until alpha matrix does not contain any NaNs

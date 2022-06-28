@@ -28,7 +28,12 @@ model_iter = zeros(n_iter, nVars_);
 obj_iter   = zeros(n_iter,1);
 time_iter  = zeros(n_iter,1);
 
-alpha_all = zeros(n_iter, LR.nCoeffs+1);
+% Conditional if statement added by John You on May 20, 2022
+if strcmp(estimator_, 'bayes') || strcmp(estimator_, 'mle')
+    alpha_all = zeros(n_iter, LR.nCoeffs);
+else
+    alpha_all = zeros(n_iter, LR.nCoeffs+1);
+end
 
 for t=1:n_iter
 

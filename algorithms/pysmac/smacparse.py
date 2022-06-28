@@ -1,6 +1,6 @@
 import numpy as np
 import ast
-from itertools import izip
+# from itertools import izip
 
 
 def param_pairs_to_float_np(param_pairs):
@@ -77,7 +77,7 @@ def parse_smac_param_string(param_string):
             cvfold-0 0 18000.0 2147483647 4 -x0 '6.9846789681200185' -x1 '13.43140264469383'
     """
     param_pieces = param_string.strip().split()[5:]
-    param_pairs = [pair for pair in izip(*[iter(param_pieces)]*2)]
+    param_pairs = [pair for pair in zip(*[iter(param_pieces)]*2)] # used to be izip
     #strip the '-'
     param_pairs = [(name[1:], value) for name, value in param_pairs]
     params = param_pairs_to_params(param_pairs)

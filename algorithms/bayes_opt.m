@@ -18,6 +18,17 @@ for i=1:n_vars
     x_vect = [x_vect, optimizableVariable(['x' num2str(i)],[0,1],'Type','integer')];
 end
 
+% Categorical variables support for wddff featurewise
+x_vect(1).Range = [1, 6];
+x_vect(2).Range = [1, 6];
+x_vect(3).Range = [1, 6];
+x_vect(4).Range = [1, 6];
+
+x_vect(5).Range = [1, 20];
+x_vect(6).Range = [1, 20];
+x_vect(7).Range = [1, 20];
+x_vect(8).Range = [1, 20];
+
 % Run Bayes Opt
 bo_time = tic;
 results = bayesopt(@(x) bayes_obj(objective, x), x_vect, 'Verbose', 0, ...

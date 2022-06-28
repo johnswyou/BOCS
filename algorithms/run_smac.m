@@ -12,7 +12,7 @@ function output = run_smac(objective, inputs)
 seed 		   = 1;
 cutoff_time    = 86400;
 rf_num_trees   = 100;
-rf_bootstrap   = 1;
+rf_bootstrap   = true;
 int_percentage = 0.0;
 
 % extract n_vars
@@ -28,23 +28,27 @@ x0_int   = zeros(1,nVars);
 xmin_int = zeros(1,nVars);
 xmax_int = ones(1,nVars);
 
+% py.importlib.import_module('pysmac')
+
 % setup SMAC objects
 smacremote = py.pysmac.smacremote.SMACRemote();
 smacrunner = py.pysmac.smacrunner.SMACRunner(...
 				x0, xmin, xmax, ...
 				x0_int, xmin_int, xmax_int, ...
-				py.dict({}), int32(smacremote.port), ...
-				int32(nIter), int32(seed), ...
-				int32(cutoff_time), ...
-				int32(rf_num_trees), ...
-				logical(rf_bootstrap), ...
-				int32(int_percentage));
-
+				py.dict({}), int64(smacremote.port), ...
+				int64(nIter), int64(seed), ...
+				int64(cutoff_time), ...
+				int64(rf_num_trees), ...
+				rf_bootstrap, ...
+				int64(int_percentage));
 
 % initialize counter and current opt_soln
 counter  = 0;
 opt_x    = x0_int;
 opt_obj  = Inf;
+model_iter = [];
+obj_iter   = [];
+time_iter  = [];
 
 % Run loop to update current solution
 while ~smacrunner.is_finished()

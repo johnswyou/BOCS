@@ -13,7 +13,7 @@ n_vars = inputs.n_vars;
 n_iter = inputs.evalBudget;
 
 % Generate initial condition and evaluate objective
-model = sample_models(1,n_vars);
+model = sample_models(1,n_vars, inputs.domains);
 model_val = objective(model);
 
 % Setup cells to store model, objective, and runtime
@@ -31,7 +31,7 @@ for i=1:n_iter
 	rand_iter = tic;
 
 	% Sample random model and evaluate objective
-	new_model = sample_models(1, n_vars);
+	new_model = sample_models(1, n_vars, inputs.domains);
 	new_model_val = objective(new_model);
 
 	% If model is better, update model, model_val 

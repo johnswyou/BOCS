@@ -5,6 +5,7 @@
 #
 
 import numpy as np
+# from numpy.random import default_rng
 
 def bhs(Xorg, yorg, nsamples, burnin, thin):
     # Implementation of the Bayesian horseshoe linear regression hierarchy.
@@ -51,8 +52,8 @@ def bhs(Xorg, yorg, nsamples, burnin, thin):
 
     n, p = Xorg.shape
 
-    # Normalize data
-    X, _, _, y, muY = standardise(Xorg, yorg)
+    # Normalize data (original uses _ for muX and normX since it does not standardize X and hence does not rescale coefficients)
+    X, muX, normX, y, muY = standardise(Xorg, yorg)
 
     # Return values
     beta = np.zeros((p, nsamples))
@@ -87,16 +88,23 @@ def bhs(Xorg, yorg, nsamples, burnin, thin):
         # Sample sigma2
         e = y - np.dot(X,b)
         shape = (n + p) / 2.
-        scale = np.dot(e.T,e)/2. + np.sum(b**2/lambda2)/tau2/2.
+
+        # Convert b from a column vector to an array with shape (b.shape[0], )
+        if len(b.shape) == 2 and b.shape[1] == 1:
+            b.shape = (len(b),)
+
+        print(b)
+        
+        scale = np.dot(e.T,e)/2. + np.sum(np.square(b)/lambda2)/tau2/2. # used to have b**2
         sigma2 = 1. / np.random.gamma(shape, 1./scale)
 
         # Sample lambda2
-        scale = 1./nu + b**2./2./tau2/sigma2
+        scale = 1./nu + np.square(b)/2./tau2/sigma2 # used to have b**2
         lambda2 = 1. / np.random.exponential(1./scale)
 
         # Sample tau2
         shape = (p + 1.)/2.
-        scale = 1./xi + np.sum(b**2./lambda2)/2./sigma2
+        scale = 1./xi + np.sum(np.square(b)/lambda2)/2./sigma2 # used to have b**2
         tau2 = 1. / np.random.gamma(shape, 1./scale)
 
         # Sample nu
@@ -118,11 +126,11 @@ def bhs(Xorg, yorg, nsamples, burnin, thin):
                 l2[:,k]   = lambda2
                 k         = k + 1
 
-    # Re-scale coefficients
-    #div_vector = np.vectorize(np.divide)
-    #beta = div_vector(beta.T, normX)
-    #b0 = muY-np.dot(muX,beta)
-    b0 = muY
+    # Re-scale coefficients (Original does not standardize X and hence does not rescale coefficients)
+    div_vector = np.vectorize(np.divide)
+    beta = div_vector(beta.T, normX)
+    b0 = muY-np.dot(muX,beta)
+    # b0 = muY
 
     return (beta, b0, s2, t2, l2)
 
@@ -178,11 +186,13 @@ def fastmvg_rue(Phi, PtP, alpha, D):
 
     v = np.linalg.solve(L, np.dot(Phi.T,alpha))
     m = np.linalg.solve(L.T, v)
-    w = np.linalg.solve(L.T, np.random.randn(p))
+    w = np.linalg.solve(L.T, np.random.randn(p)) # must make w into a column vector in the next line
+    if len(w.shape) == 1:
+        w.shape = (len(w), 1)
+    
+    x = m + w # this should produce a column vector, meaning that both m and w must be column vectors
 
-    x = m + w
-
-    return x
+    return x #.astype(np.float64)
 
 def standardise(X, y):
     # Standardize the covariates to have zero mean and x_i'x_i = 1
@@ -192,11 +202,11 @@ def standardise(X, y):
     meanX = np.mean(X, axis=0)
     stdX  = np.std(X, axis=0) * np.sqrt(n)
 
-    # Standardize X's
-    #sub_vector = np.vectorize(np.subtract)
-    #X = sub_vector(X, meanX)
-    #div_vector = np.vectorize(np.divide)
-    #X = div_vector(X, stdX)
+    # Standardize X's (original does not standardize X)
+    sub_vector = np.vectorize(np.subtract)
+    X = sub_vector(X, meanX)
+    div_vector = np.vectorize(np.divide)
+    X = div_vector(X, stdX)
 
     # Standardize y's
     meany = np.mean(y)
