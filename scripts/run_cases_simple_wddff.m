@@ -4,7 +4,7 @@
 % See LICENSE.md for copyright information
 %
 
-function run_cases_wddff_fw(inputs_all, lambda_vals, test_name, n_proc)
+function run_cases_simple_wddff(inputs_all, lambda_vals, test_name, n_proc)
 % RUN_CASES: Functions runs the discrete optimization algorithms
 % on all test cases specified in inputs_all with the lambda values
 % prescribed in lambda_vals vector. The results are saved in the
@@ -14,8 +14,7 @@ function run_cases_wddff_fw(inputs_all, lambda_vals, test_name, n_proc)
 n_test = length(inputs_all);
 
 %% Parallel Problem setup
-
-parpool(n_proc);
+% parpool(n_proc);
 parfor t=1:n_test    
 
     % Set test inputs struct
@@ -132,11 +131,13 @@ parfor t=1:n_test
 
 %         iSave(sprintf(['/results/' test_name '/test%d.mat'], t), ...
 %             rnd, sa, bo, ols, smc, smac, bayes, mle, hs, inputs_t);
-        iSave1(sprintf(['./results/' test_name '/test%d.mat'], t), ...
+%         iSave1(sprintf(['./results/' test_name '/test%d.mat'], t), ...
+%             rnd, sa, bo, hs, inputs_t);
+        iSave1(sprintf(test_name + '/test%d.mat', t), ...
             rnd, sa, bo, hs, inputs_t);
 %         save(sprintf(['./results/' test_name '/test%d.mat'], t), 'mle', 'inputs_t')
 
     end
 end
 
-delete(gcp('nocreate'))
+% delete(gcp('nocreate'))
