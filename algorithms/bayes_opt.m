@@ -19,15 +19,25 @@ for i=1:n_vars
 end
 
 % Categorical variables support for wddff featurewise
-x_vect(1).Range = [1, 6];
-x_vect(2).Range = [1, 6];
-x_vect(3).Range = [1, 6];
-x_vect(4).Range = [1, 6];
+if n_vars == 6
 
-x_vect(5).Range = [1, 20];
-x_vect(6).Range = [1, 20];
-x_vect(7).Range = [1, 20];
-x_vect(8).Range = [1, 20];
+    x_vect(1).Range = [1, 6];
+    x_vect(2).Range = [1, 6];
+    x_vect(3).Range = [1, 6];
+    x_vect(4).Range = [1, 6];
+    
+    x_vect(5).Range = [1, 20];
+    x_vect(6).Range = [1, 20];
+    x_vect(7).Range = [1, 20];
+    x_vect(8).Range = [1, 20];
+
+elseif n_vars == 2
+    x_vect(1).Range = [1, 6];
+    x_vect(2).Range = [1, 20];
+
+else
+    error("n_vars of 2 or 6 supported at present.")
+end
 
 % Run Bayes Opt
 bo_time = tic;
